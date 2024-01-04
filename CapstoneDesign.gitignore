@@ -1,0 +1,82 @@
+#Capstonedesign
+
+# TCS230 RGB 센서의 핀 번호 설정
+const int S0Pin = 5;   // S0 핀
+const int S1Pin = 6;   // S1 핀
+const int S2Pin = 2;   // S2 핀
+const int S3Pin = 3;   // S3 핀
+const int outPin = 4;  // 출력 핀
+const int ledPin = 13; // LED가 연결된 핀
+
+# RGB 값을 저장하기 위한 변수
+int redValue = 0;
+int greenValue = 0;
+int blueValue = 0;
+
+# 특정 RGB 값
+int targetRedMin = 100;
+int targetRedMax = 800;
+int targetGreenMin = 0;
+int targetGreenMax = 20;
+int targetBlueMin = 8500;
+int targetBlueMax = 10500;
+
+void setup() {
+  # RGB 센서의 핀을 입력 모드로 설정
+  pinMode(S0Pin, OUTPUT);
+  pinMode(S1Pin, OUTPUT);
+  pinMode(outPin, INPUT);
+  pinMode(S2Pin, OUTPUT);
+  pinMode(S3Pin, OUTPUT);
+
+  # LED가 연결된 핀을 출력 모드로 설정
+  pinMode(ledPin, OUTPUT);
+
+  # 센서의 출력 값을 기본적으로 LOW로 설정
+  digitalWrite(S0Pin, LOW);
+  # 주파수 분할 기능 사용을 위해 HIGH로 설정
+  digitalWrite(S1Pin, HIGH);
+
+  # Serial 통신 설정 (시리얼 모니터로 값 출력용)
+  Serial.begin(9600);
+}
+
+void loop() {
+  # 센서에서 RGB 값을 읽기 위해 필터 선택
+  # 붉은색 필터 선택
+  digitalWrite(S0Pin, LOW);
+  digitalWrite(S1Pin, HIGH);
+
+  # 센서에서 출력 값을 읽음
+  redValue = pulseIn(outPin, LOW);
+
+  # 녹색 필터 선택
+  digitalWrite(S0Pin, HIGH);
+  digitalWrite(S1Pin, HIGH);
+
+  # 센서에서 출력 값을 읽음
+  greenValue = pulseIn(outPin, LOW);
+
+  # 파란색 필터 선택
+  digitalWrite(S0Pin, LOW);
+  digitalWrite(S1Pin, LOW);
+
+  # 센서에서 출력 값을 읽음
+  blueValue = pulseIn(outPin, LOW);
+
+  # RGB 값 출력 (Serial 모니터에 출력)
+  Serial.print("Red: ");
+  Serial.print(redValue);
+  Serial.print(" Green: ");
+  Serial.print(greenValue);
+  Serial.print(" Blue: ");
+  Serial.println(blueValue);
+  # 특정 RGB 값을 감지하면 LED를 켜기
+   if (redValue >= targetRedMin && redValue <= targetRedMax && greenValue >= targetGreenMin && greenValue <= targetGreenMax && blueValue >= targetBlueMin && blueValue <=targetBlueMax) {
+    digitalWrite(ledPin, HIGH);
+  } else {
+    digitalWrite(ledPin, LOW);
+  }
+
+  delay(500);
+}
